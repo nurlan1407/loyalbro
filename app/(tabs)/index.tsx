@@ -1,31 +1,55 @@
-import { StyleSheet } from 'react-native';
-
-import EditScreenInfo from '../../components/EditScreenInfo';
-import { Text, View } from '../../components/Themed';
+import { StyleSheet, Touchable } from 'react-native';
+import { View, Text, SafeAreaView, FlatList, TouchableOpacity, ImageBackground, Image, ScrollView, Dimensions } from 'react-native'
+import { COLORS, SIZES } from '../../constants/theme';
+import icons from '~/constants/icons'
+import { Catergories, Adverts, EstablishMents } from '../../components/home';
+import { EstablishmentDemo } from '~/types/Establishment';
 
 export default function TabOneScreen() {
+
+  const windowWidth = Dimensions.get("window").width;
+
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
-    </View>
+    <SafeAreaView>
+      <ScrollView>
+        <View style={styles.container}>
+          <Adverts></Adverts>
+          <Catergories></Catergories>
+          <View style={[styles.cardContainer, { paddingBottom: 50 }]}>
+            <Text style={[styles.title, { paddingLeft: 0, paddingBottom: 10 }]} >Все Магазины</Text>
+            <EstablishMents></EstablishMents>
+          </View>
+        </View>
+      </ScrollView>
+
+    </SafeAreaView>
+
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingBottom: 50
+  },
+  cardContainer: {
+    flexDirection: "column",
+    padding: SIZES.small
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: SIZES.xLarge,
+    fontWeight: '700',
+    paddingLeft: SIZES.small,
+    color: "gray",
+    alignSelf: "flex-start",
+
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  text: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    // Add your text styling here
   },
 });
+
