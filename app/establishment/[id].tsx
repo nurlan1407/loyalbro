@@ -107,7 +107,6 @@ export default function Page({ navigation }) {
 
                     backgroundColor: `rgba(0, 0,0 , 0.5)`,
                     width: '100%',
-
                     //for animation
                     height: 50,
                     position: 'absolute',
@@ -165,10 +164,10 @@ export default function Page({ navigation }) {
                         <Text style={{ color: "#FFFFFF", flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', fontSize: SIZES.medium, padding: SIZES.xSmall, borderRadius: 10 }}>{currentIndex + 1}/{currentEstablishMent?.imgs.length}</Text>
                     </View>
 
-                    <View style={{ width: 30, height: 'auto', position: 'absolute', bottom: -40, right: 20, alignItems: 'center', justifyContent: 'center' }}>
+                    <View style={{ width: 30, height: 'auto', position: 'absolute',bottom: -40, right: 20, alignItems: 'center', justifyContent: 'center' }}>
+                        <View style={[styles.triangleCorner, { position:"absolute", bottom: -40, right: 20 }]} />
                         <Text style={{ color: "#FFF", zIndex: 5, textAlign: 'center', fontSize: SIZES.medium }}>5%</Text>
-                        <View style={[styles.triangleCorner, { position: 'absolute', bottom: -40, right: 20 }]} />
-                        <View style={[styles.triangleLeftCorner, { position: 'absolute', bottom: -40, right: 20, }]} />
+                        <View style={[styles.triangleLeftCorner, { position:"absolute",bottom: -40, right: 20, }]} />
                     </View>
                 </Animated.View>
 
