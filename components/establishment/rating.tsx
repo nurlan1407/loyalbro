@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, Image, ImageStyle } from 'react-native'
 import React from 'react'
 import images from '~/constants/images'
 import icons from '~/constants/icons'
+import { COLORS } from '~/constants/theme'
 interface RatingProps {
     rating: number,
     gap:number,
@@ -17,7 +18,7 @@ const Rating: React.FC<RatingProps> = ({ rating, gap, starStyle }) => {
         <View style={{ flexDirection: 'row', gap: gap}}>
             {stars.map(star => {
                 return (
-                    <Image source={icons.ratingFilled} style={StyleSheet.flatten([starStyle, { tintColor: rating >= star ? 'red' : 'lightgray' }])}></Image>
+                    <Image source={icons.ratingFilled} style={StyleSheet.flatten([starStyle, { tintColor: rating >= star ? COLORS.primary : 'lightgray' }])}></Image>
                 );
             })}
         </View>

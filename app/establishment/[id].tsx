@@ -9,10 +9,10 @@ import { COLORS, SIZES } from '~/constants/theme';
 import icons from '~/constants/icons';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import ReAnimated, { useSharedValue, withSpring, useAnimatedStyle, interpolate, Extrapolate } from 'react-native-reanimated'
-import Details from '~/components/establishment/details';
+import Details from '~/components/establishment/establishmentDetails/details';
 import Testimomials from '~/components/establishment/testimonials';
 import { Ionicons } from '@expo/vector-icons';
-
+import DetailedInfo from '~/components/establishment/establishmentDetails';
 
 const SCREEN_WIDTH = Dimensions.get('screen').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -31,10 +31,10 @@ export default function Page({ navigation }) {
     })
 
 
+
     const HEADER_EXPANDED_HEIGHT = 250
     const HEADER_COLLAPSED_HEIGHT = 60
     const liked = useSharedValue(0);
-    // const [liked, setIsLiked] = useState(false)
     function onLikePressed() {
         liked.value = withSpring(liked.value ? 0 : 1)
     }
@@ -162,10 +162,10 @@ export default function Page({ navigation }) {
                         <Text style={{ color: "#FFFFFF", flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', fontSize: SIZES.medium, padding: SIZES.xSmall, borderRadius: 10 }}>{currentIndex + 1}/{currentEstablishMent?.imgs.length}</Text>
                     </View>
 
-                    <View style={{ width: 30, height: 'auto', position: 'absolute',bottom: -40, right: 20, alignItems: 'center', justifyContent: 'center' }}>
-                        <View style={[styles.triangleCorner, { position:"absolute", bottom: -40, right: 20 }]} />
+                    <View style={{ width: 30, height: 'auto', position: 'absolute', bottom: -40, right: 20, alignItems: 'center', justifyContent: 'center' }}>
+                        <View style={[styles.triangleCorner, { position: "absolute", bottom: -40, right: 20 }]} />
                         <Text style={{ color: "#FFF", zIndex: 5, textAlign: 'center', fontSize: SIZES.medium }}>5%</Text>
-                        <View style={[styles.triangleLeftCorner, { position:"absolute",bottom: -40, right: 20, }]} />
+                        <View style={[styles.triangleLeftCorner, { position: "absolute", bottom: -40, right: 20, }]} />
                     </View>
                 </Animated.View>
 
@@ -203,23 +203,9 @@ export default function Page({ navigation }) {
                     </View>
 
 
-
-
-
-
-
-                    <View style={{
-                        flexDirection: 'row',
-                        justifyContent: "space-between",
-                        padding: SIZES.medium,
-                    }}>
-                        <Text style={{ color: '#000', fontWeight: '600', }}>Детали</Text>
-                        <Text style={{ color: 'gray', fontWeight: '600', }}>Отзывы</Text>
-                        <Text style={{ color: 'gray', fontWeight: '600', }}>Бонусы</Text>
-                        <Text style={{ color: 'gray', fontWeight: '600', }}>Гости</Text>
-                    </View>
+                    <DetailedInfo establishment={currentEstablishMent}></DetailedInfo>
                     {/* <Details></Details> */}
-                    <Testimomials></Testimomials>
+                    {/* <Testimomials></Testimomials> */}
                 </Animated.ScrollView>
             </SafeAreaView >
         </>

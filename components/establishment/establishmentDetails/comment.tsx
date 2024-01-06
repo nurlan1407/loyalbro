@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Image } from 'react-native'
 import images from '~/constants/images'
-import Rating from './rating'
+import Rating from '../rating'
 import { SIZES } from '~/constants/theme'
 import formatDate from '~/shared/lib/formatData'
 

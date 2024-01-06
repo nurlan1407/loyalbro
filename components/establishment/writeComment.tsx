@@ -109,7 +109,7 @@ const WriteComment: React.FC<WriteCommentModalProps> = ({ isVisible, height, clo
                                     setCurrentRating(star)
                                 }}
                             >
-                                <Image source={icons.ratingFilled} style={{ width: 50, height: 50, tintColor: currentRating >= star ? 'red' : 'lightgray' }}></Image>
+                                <Image source={icons.ratingFilled} style={{ width: 50, height: 50, tintColor: currentRating >= star ? COLORS.primary : 'lightgray' }}></Image>
                             </TouchableOpacity>
                         )}
                     </View>

@@ -69,7 +69,7 @@ export default function Details() {
             <Text style={{ fontSize: SIZES.large }}>Описание</Text>
             <Text style={{ fontSize: SIZES.medium, color: 'gray' }}>Оздоровительный центр</Text>
             <View style={{ flexDirection: 'row', gap: 25, alignItems: 'center', marginTop: 10 }}>
-                <Ionicons name="time-outline" size={32} color={COLORS.primary} style={{ width: 50, height: 50, alignSelf: 'flex-start' }} />
+                <Ionicons name="time-outline" size={32} color={COLORS.primary} style={{ width: 50, height: 50,paddingTop:10 }} />
                 {showRef == false ?
                     <View>
                         <Text>Сегодня</Text>

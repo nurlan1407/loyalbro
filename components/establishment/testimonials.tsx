@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Image, Dimensions } from 'react-native'
 import icons from '~/constants/icons'
 import { COLORS, SIZES } from '~/constants/theme'
-import Comment from './comment'
+import Comment from './establishmentDetails/comment'
 import LinkButton from '~/shared/ui/LinkButton'
 import { useState } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
@@ -90,7 +90,7 @@ export default function Testimomials() {
                                 onPress={() => { setIsModalVisible(true) }}
                                 onPressOut={onTouchEnd}
                             >
-                                <Image source={icons.ratingFilled} style={{ width: 60, height: 60, tintColor: isStarsTouching && currentRating >= star ? 'red' : 'lightgray' }}></Image>
+                                <Image source={icons.ratingFilled} style={{ width: 60, height: 60, tintColor: isStarsTouching && currentRating >= star ? COLORS.primary : 'lightgray' }}></Image>
                             </TouchableOpacity>
                         )}
                     </View>
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
         width: 18,
         height: 18,
         flex: 1,
-        tintColor: "red"
+        tintColor: COLORS.primary
     },
     ratingContainer: {
         flexDirection: 'row',
