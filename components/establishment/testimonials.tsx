@@ -1,11 +1,13 @@
-import { View, Text, StyleSheet, Image } from 'react-native'
+import { View, Text, StyleSheet, Image, Dimensions } from 'react-native'
 import icons from '~/constants/icons'
 import { COLORS, SIZES } from '~/constants/theme'
 import Comment from './comment'
-import LinkButton from '~/app/shared/ui/LinkButton'
+import LinkButton from '~/shared/ui/LinkButton'
 import { useState } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useRouter } from 'expo-router'
+import WriteComment from '~/components/establishment/writeComment'
+
 const LOREM = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime fuga iure, quod, illo quo ullam animi, atque eum eveniet recusandae voluptatum quia officia dolore quas libero. Asperiores nobis modi ut.
 Atque quas error numquam blanditiis! Corrupti veritatis facere ex debitis possimus similique aperiam nulla eos enim. Ullam adipisci error totam exercitationem blanditiis qui inventore, nemo id libero maxime corrupti possimus!`
 
@@ -21,7 +23,7 @@ const comments = [{
 }]
 
 export default function Testimomials() {
-    const router = useRouter()
+    const screenHeight = Dimensions.get('screen').height
     const stars = Array.from({ length: 5 }, (_, i) => i + 1)
     const [isStarsTouching, setIsStarsTouching] = useState(false)
     const [currentRating, setCurrentRating] = useState(0)
@@ -32,8 +34,10 @@ export default function Testimomials() {
     const onTouchEnd = () => {
         setIsStarsTouching(false)
     }
+    const [isModalVisible, setIsModalVisible] = useState(false)
     return (
         <>
+            <WriteComment isVisible={isModalVisible} height={screenHeight*0.3} closeModal={()=>{setIsModalVisible(false)}}></WriteComment>
             <View style={styles.container}>
                 <View style={{ justifyContent: 'center' }}>
                     <Text style={{ fontWeight: "800", fontSize: 40, textAlign: "center" }}>4,8</Text>
@@ -83,7 +87,7 @@ export default function Testimomials() {
                             <TouchableOpacity
                                 style={[styles.bigStar,]}
                                 onPressIn={() => { onTouchStart(star) }}
-                                onPress={()=>{router.push('/writeComment')}}
+                                onPress={() => { setIsModalVisible(true) }}
                                 onPressOut={onTouchEnd}
                             >
                                 <Image source={icons.ratingFilled} style={{ width: 60, height: 60, tintColor: isStarsTouching && currentRating >= star ? 'red' : 'lightgray' }}></Image>

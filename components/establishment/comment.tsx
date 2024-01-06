@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Image } from 'react-native'
 import images from '~/constants/images'
 import Rating from './rating'
 import { SIZES } from '~/constants/theme'
-import formatDate from '~/app/shared/lib/formatData'
+import formatDate from '~/shared/lib/formatData'
 
 interface props {
     text: string,

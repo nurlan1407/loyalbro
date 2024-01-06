@@ -104,7 +104,6 @@ export default function Page({ navigation }) {
                     headerShown: false,
                 }} />
                 <Animated.View style={{
-
                     backgroundColor: `rgba(0, 0,0 , 0.5)`,
                     width: '100%',
                     //for animation
@@ -114,7 +113,6 @@ export default function Page({ navigation }) {
                     right: 0,
                     left: 0,
                     zIndex: 8,
-
                 }}>
                     <LinearGradient
                         start={{ x: 0, y: 0 }}
@@ -203,6 +201,13 @@ export default function Page({ navigation }) {
                             </ReAnimated.View>
                         </TouchableOpacity>
                     </View>
+
+
+
+
+
+
+
                     <View style={{
                         flexDirection: 'row',
                         justifyContent: "space-between",
@@ -216,7 +221,6 @@ export default function Page({ navigation }) {
                     {/* <Details></Details> */}
                     <Testimomials></Testimomials>
                 </Animated.ScrollView>
-
             </SafeAreaView >
         </>
 
