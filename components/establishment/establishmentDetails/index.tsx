@@ -1,11 +1,21 @@
-import React, { useState } from 'react'
-import { View, Text } from "react-native"
+import React, { ReactNode, useState, useEffect } from 'react'
+import { View, Text, Animated } from "react-native"
 import { Establishment } from '~/types/Establishment'
 import { SIZES } from '~/constants/theme'
 import Details from './details'
 import Testimomials from '../testimonials'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
+import { NavigationContainer } from '@react-navigation/native'
+import Fade from '~/shared/ui/Fade'
+// import Animated, { interpolateColor, useAnimatedStyle, useSharedValue, withTiming, SharedValue } from 'react-native-reanimated'
 
-const subPages = [
+
+type SubPage = {
+    name: string
+    title: string
+    Node: ReactNode
+}
+const subPages: SubPage[] = [
     {
         name: 'details',
         title: 'Детали',
@@ -27,6 +37,7 @@ const subPages = [
         Node: <></>
     }
 ]
+const Tab = createMaterialTopTabNavigator();
 
 interface DetailedInfoProps {
     establishment: Establishment | null,
@@ -34,6 +45,21 @@ interface DetailedInfoProps {
 
 const DetailedInfo: React.FC<DetailedInfoProps> = () => {
     const [currentPage, setCurrentPage] = useState(subPages[0])
+
+    const [isVisible, setIsVisible] = useState(true);
+    const [nextPage, setNextPage] = useState<SubPage | null>(null);
+
+    const changePage = (page: SubPage) => {
+        if(currentPage.name == page.name)return
+        setIsVisible(false); // Start fade-out
+
+        setTimeout(() => {
+            setCurrentPage(page);
+            setIsVisible(true)
+        }, 300)
+    };
+
+
     return (
         <>
             <View style={{
@@ -42,21 +68,34 @@ const DetailedInfo: React.FC<DetailedInfoProps> = () => {
                 padding: SIZES.medium,
             }}>
                 {subPages.map((page) => {
+
                     return (
                         <Text
-                            style={{ color: currentPage.name == page.name ? '#000' : 'gray', fontWeight: '600' }}
-                            onPress={() => {setCurrentPage(page) }}
+                            key={page.name}
+                            style={{ fontWeight: '600', color: page.name == currentPage.name ? '#000' : 'gray' }}
+                            onPress={() => { changePage(page) }}
                         >
                             {page.title}
                         </Text>
                     )
                 })}
-                {/* <Text style={{ color: '#000', fontWeight: '600' }} onPress={() => { }}>Детали</Text>
-            <Text style={{ color: 'gray', fontWeight: '600' }} onPress={() => { }}>Отзывы</Text>
-            <Text style={{ color: 'gray', fontWeight: '600' }} onPress={() => { }}>Бонусы</Text>
-            <Text style={{ color: 'gray', fontWeight: '600' }} onPress={() => { }}>Гости</Text> */}
             </View>
-            {currentPage.Node}
+            {/* {subPages.filter(page => page.name === currentPage.name).map((page) => (
+                <Fade key={page.name} isVisible={page.name === currentPage.}>
+                    {page.Node}
+                </Fade>
+            ))} */}
+            {/* {subPages.map((page) => (
+                <Fade key={page.name} isVisible={page.name == currentPage.name}>
+                    {page.Node}
+                </Fade>
+            ))} */}
+            <Fade
+                isVisible={isVisible}
+            >
+                {currentPage.Node}
+            </Fade>
+            {/* {currentPage.Node} */}
         </>
 
     )

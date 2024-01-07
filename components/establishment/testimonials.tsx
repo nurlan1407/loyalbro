@@ -3,7 +3,7 @@ import icons from '~/constants/icons'
 import { COLORS, SIZES } from '~/constants/theme'
 import Comment from './establishmentDetails/comment'
 import LinkButton from '~/shared/ui/LinkButton'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useRouter } from 'expo-router'
 import WriteComment from '~/components/establishment/writeComment'
@@ -34,6 +34,11 @@ export default function Testimomials() {
     const onTouchEnd = () => {
         setIsStarsTouching(false)
     }
+    useEffect(()=>{
+        console.log('LOX');
+
+    },[])
+    
     const [isModalVisible, setIsModalVisible] = useState(false)
     return (
         <>
