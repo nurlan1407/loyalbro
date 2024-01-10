@@ -1,10 +1,10 @@
-import { View, Text, StyleSheet, Image, Dimensions } from 'react-native'
+import { View, Text, StyleSheet, Image, Dimensions, ScrollView } from 'react-native'
 import icons from '~/constants/icons'
 import { COLORS, SIZES } from '~/constants/theme'
 import Comment from './establishmentDetails/comment'
 import LinkButton from '~/shared/ui/LinkButton'
 import { useEffect, useState } from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler'
 import { useRouter } from 'expo-router'
 import WriteComment from '~/components/establishment/writeComment'
 
@@ -22,7 +22,10 @@ const comments = [{
 
 }]
 
-export default function Testimomials() {
+interface TestimonialsProps{
+  
+}
+const Testimomials:React.FC<TestimonialsProps> =()=> {
     const screenHeight = Dimensions.get('screen').height
     const stars = Array.from({ length: 5 }, (_, i) => i + 1)
     const [isStarsTouching, setIsStarsTouching] = useState(false)
@@ -34,16 +37,18 @@ export default function Testimomials() {
     const onTouchEnd = () => {
         setIsStarsTouching(false)
     }
-    useEffect(()=>{
+    useEffect(() => {
         console.log('LOX');
 
-    },[])
-    
+    }, [])
+
     const [isModalVisible, setIsModalVisible] = useState(false)
     return (
-        <>
-            <WriteComment isVisible={isModalVisible} height={screenHeight*0.3} closeModal={()=>{setIsModalVisible(false)}}></WriteComment>
-            <View style={styles.container}>
+        <View style={{flex:1}} onLayout={(e) => {
+            console.log('comments' + e.nativeEvent.layout.height);
+        }}>
+            <WriteComment isVisible={isModalVisible} height={screenHeight * 0.3} closeModal={() => { setIsModalVisible(false) }}></WriteComment>
+            <View style={styles.container} >
                 <View style={{ justifyContent: 'center' }}>
                     <Text style={{ fontWeight: "800", fontSize: 40, textAlign: "center" }}>4,8</Text>
                     <Text style={{ color: 'gray', textAlign: 'center', fontSize: SIZES.large }}>438 отзывов</Text>
@@ -105,8 +110,9 @@ export default function Testimomials() {
                 {comments.map((comment) =>
                     <Comment text={comment.text} date={comment.date} username={comment.username}></Comment>
                 )}
+
             </View >
-        </>
+        </View>
 
     )
 }
@@ -159,3 +165,5 @@ const styles = StyleSheet.create({
         flex: 2
     }
 })
+
+export default Testimomials

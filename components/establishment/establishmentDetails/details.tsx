@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, Linking } from 'react-native'
+import { View, Text, Image, TouchableOpacity, Linking, ViewProps } from 'react-native'
 import { COLORS, SIZES } from '~/constants/theme'
 import { MaterialIcons, Feather, Ionicons } from '@expo/vector-icons'
 import { useState, useRef } from 'react'
@@ -20,8 +20,10 @@ const mockSchedule = [
 
 
 
+interface DetailProps extends ViewProps {
 
-export default function Details() {
+}
+const Details: React.FC<DetailProps> = () => {
     const showSchedule = useSharedValue(1)
     const [showRef, setShowRef] = useState(false)
     function onSchedulePressed() {
@@ -65,11 +67,13 @@ export default function Details() {
     }
 
     return (
-        <View style={{ padding: SIZES.medium, marginTop: 1, paddingTop: 0, }}>
+        <View style={{ padding: SIZES.medium, marginTop: 1, paddingTop: 0 }} onLayout={(e) => {
+            console.log('details   ' +e.nativeEvent.layout.height);
+        }}>
             <Text style={{ fontSize: SIZES.large }}>Описание</Text>
             <Text style={{ fontSize: SIZES.medium, color: 'gray' }}>Оздоровительный центр</Text>
             <View style={{ flexDirection: 'row', gap: 25, alignItems: 'center', marginTop: 10 }}>
-                <Ionicons name="time-outline" size={32} color={COLORS.primary} style={{ width: 50, height: 50,paddingTop:10 }} />
+                <Ionicons name="time-outline" size={32} color={COLORS.primary} style={{ width: 50, height: 50, paddingTop: 10 }} />
                 {showRef == false ?
                     <View>
                         <Text>Сегодня</Text>
@@ -123,3 +127,5 @@ export default function Details() {
         </View>
     )
 }
+
+export default Details
