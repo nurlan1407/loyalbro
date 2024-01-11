@@ -68,7 +68,6 @@ const Details: React.FC<DetailProps> = () => {
 
     return (
         <View style={{ padding: SIZES.medium, marginTop: 1, paddingTop: 0 }} onLayout={(e) => {
-            console.log('details   ' +e.nativeEvent.layout.height);
         }}>
             <Text style={{ fontSize: SIZES.large }}>Описание</Text>
             <Text style={{ fontSize: SIZES.medium, color: 'gray' }}>Оздоровительный центр</Text>

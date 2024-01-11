@@ -18,22 +18,7 @@ const SCREEN_WIDTH = Dimensions.get('screen').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 export default function Page({ navigation }) {
-    const scrollY = new Animated.Value(0);
-    const diffClamp = Animated.diffClamp(scrollY, 0, 64);
-    const translateY = diffClamp.interpolate({
-        inputRange: [0, 64],
-        outputRange: [0, -64],
-    });
-    const headerOpacity = diffClamp.interpolate({
-        inputRange: [0, 200],
-        outputRange: [0.5, 1],
-        extrapolate: 'clamp'
-    })
-
-
-
-    const HEADER_EXPANDED_HEIGHT = 250
-    const HEADER_COLLAPSED_HEIGHT = 60
+    const [isScrollEnabled, setIsScrollEnabled] = useState(true);
     const liked = useSharedValue(0);
     function onLikePressed() {
         liked.value = withSpring(liked.value ? 0 : 1)
@@ -54,21 +39,6 @@ export default function Page({ navigation }) {
             opacity: liked.value,
         };
     });
-
-
-    const [headerBg, setHeaderBg] = useState<string | null>(null);
-    // const scrollY = new Animated.Value(0)
-    const scrolling = useRef(new Animated.Value(0)).current;
-    const headerHeight = scrolling.interpolate({
-        inputRange: [0, 60],
-        outputRange: [HEADER_EXPANDED_HEIGHT, HEADER_COLLAPSED_HEIGHT - 60],
-        extrapolate: 'clamp'
-    })
-    const padding = scrolling.interpolate(({
-        inputRange: [0, 60],
-        outputRange: [HEADER_EXPANDED_HEIGHT, 0],
-        extrapolate: 'clamp'
-    }))
 
 
     const { id } = useLocalSearchParams();
@@ -94,6 +64,81 @@ export default function Page({ navigation }) {
         }
         setCurrentEstablishMent(est)
     }, [currentEstablishMent])
+
+
+
+
+    const scrollViewRef = useRef<ScrollView>(null)
+    const scrollY = useRef(new Animated.Value(0)).current
+    const flatlistHeight = scrollY.interpolate({
+        inputRange: [0, 250 - 60],
+        outputRange: [250, 60],
+        extrapolate: 'clamp'
+    })
+    const backgroundColor = scrollY.interpolate({
+        inputRange: [0, 100],  // Adjust these numbers to control when the color starts and finishes changing
+        outputRange: ['rgba(0,0,0,0.3)', 'rgba(255,255,255,1)'], // Change from transparent to white
+        extrapolate: 'clamp',  // This will clamp the output color so it doesn't go beyond the outputRange
+    });
+    const textColor = scrollY.interpolate({
+        inputRange: [0, 110],  // Adjust these numbers to control when the color starts and finishes changing
+        outputRange: ['rgba(255,255,255,1)', 'rgba(0,0,0,1)'], // Change from transparent to white
+        extrapolate: 'clamp',  // This will clamp the output color so it doesn't go beyond the outputRange
+    })
+    const flatListOpacity = scrollY.interpolate({
+        inputRange: [20, 95],  // Adjust these numbers to control when the color starts and finishes changing
+        outputRange: [0, 1], // Change from transparent to white
+        extrapolate: 'clamp',  // This will clamp the output color so it doesn't go beyond the outputRange
+    });
+    const flatListIndicatorOpacity = scrollY.interpolate({
+        inputRange: [50, 110],  // Adjust these numbers to control when the color starts and finishes changing
+        outputRange: [1, 0], // Change from transparent to white
+        extrapolate: 'clamp',  // This will clamp the output color so it doesn't go beyond the outputRange
+    });
+    const headerOpacity = scrollY.interpolate({
+        inputRange: [0, 70],  // Adjust these numbers to control when the color starts and finishes changing
+        outputRange: [0.2, 1], // Change from transparent to white
+        extrapolate: 'clamp',  // This will clamp the output color so it doesn't go beyond the outputRange
+    });
+    const shadowOpacity = scrollY.interpolate({
+        inputRange: [0, 70],
+        outputRange: [1, 0], // Тень начинается полупрозрачной и становится невидимой
+        extrapolate: 'clamp',
+    })
+
+    const [lastScrollY, setLastScrollY] = useState(0); // Для отслеживания последнего значения scrollY
+    const [timer, setTimer] = useState<(() => void) | null>(null)
+    function reset() {
+        setIsScrollEnabled(true)
+        setTimer(null)
+    }
+    function callTimer() {
+        setInterval(() => {
+            reset()
+        }, 1000)
+    }
+    function handleScrollViewScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
+        const positionY = event.nativeEvent.contentOffset.y;
+
+        // Если пользователь прокрутил достаточно далеко и скролл включен
+        // if (positionY >= 100 && isScrollEnabled) {
+        //     setIsScrollEnabled(false); // Выключаем дополнительный скролл
+        //     scrollViewRef.current?.scrollTo({ y: 99, animated: true }); // Прокручиваем немного назад
+        // } else if (positionY < 100 && !isScrollEnabled) {
+        //     setIsScrollEnabled(true); // Включаем скролл обратно, когда пользователь прокрутил назад
+        // }
+
+        // console.log(positionY);
+
+        if (positionY >= 100) {
+            setIsScrollEnabled(false)
+        }
+        Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
+        )(event);
+    }
+
     return (
         <>
             <StatusBar barStyle={'dark-content'} backgroundColor={"#00000000"} translucent={false}></StatusBar>
@@ -104,109 +149,133 @@ export default function Page({ navigation }) {
                     headerShown: false,
                 }} />
                 <Animated.View style={{
-                    backgroundColor: `rgba(0, 0,0 , 0.5)`,
                     width: '100%',
-                    //for animation
                     height: 50,
-                    position: 'absolute',
-                    top: translateY,
-                    right: 0,
-                    left: 0,
+                    // opacity: headerOpacity,
+                    backgroundColor: backgroundColor,
                     zIndex: 8,
+                    position: 'absolute',
+                    top: 0,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingHorizontal: SIZES.large,
+                    gap: SIZES.large,
+                    // Стиль тени
+                    shadowOpacity: shadowOpacity,
+                    shadowRadius: 45, // Размер тени
+                    shadowColor: '#000', // Цвет тени
+                    shadowOffset: { width: 0, height: 45 },
+
+                    elevation: 1, // Для Android
                 }}>
-                    <LinearGradient
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 0, y: 1 }}
-                        colors={['#232121', "transparent"]}
-                        style={{
-                            flex: 1, height: "100%", flexDirection: 'row',
-                            alignItems: 'center',
-                            gap: 20, paddingLeft: SIZES.small,
-                            paddingRight: SIZES.small
-                        }}>
-                        <TouchableOpacity>
-                            <Ionicons name="arrow-back" size={30} color="#FFF" />
-                        </TouchableOpacity>
-                        <Text style={{ fontSize: SIZES.large, color: "#FFF" }}>{currentEstablishMent?.title}</Text>
-                    </LinearGradient>
+                    <TouchableOpacity>
+                        <Ionicons name="arrow-back" size={30} />
+                    </TouchableOpacity>
+                    <Animated.Text style={{ fontSize: SIZES.large, color: textColor }}>{currentEstablishMent?.title}</Animated.Text>
                 </Animated.View>
-                {/* ptoto slider*/}
-                <Animated.View style={{ height: headerHeight, width: SCREEN_WIDTH, position: 'absolute', top: translateY, left: 0, zIndex: 3 }}>
-                    <FlatList
-                        ref={flatListRef}
-                        data={currentEstablishMent?.imgs}
-                        renderItem={({ item, index }) => (
-                            <View style={{ width: SCREEN_WIDTH, justifyContent: 'center', alignItems: 'center' }}>
-                                <Image source={item} style={{ flex: 1, resizeMode: 'cover', width: "100%", height: "100%" }} />
-                            </View>
-                        )}
-                        snapToInterval={SCREEN_WIDTH}
-                        snapToAlignment='center'
-                        decelerationRate={'normal'}
-                        disableIntervalMomentum
-                        pagingEnabled
-                        getItemLayout={(data, index) => (
-                            { length: SCREEN_WIDTH, offset: SCREEN_WIDTH * index, index }
-                        )}
-                        onScroll={handleScroll}
-                        scrollEventThrottle={1}
-                        showsHorizontalScrollIndicator={false}
-                        keyExtractor={index => index}
-                        horizontal
-                    />
-                    <View style={{
-                        position: 'absolute',
-                        bottom: 10,
-                        right: 10
-                    }}>
-                        <Text style={{ color: "#FFFFFF", flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', fontSize: SIZES.medium, padding: SIZES.xSmall, borderRadius: 10 }}>{currentIndex + 1}/{currentEstablishMent?.imgs.length}</Text>
-                    </View>
+                <ScrollView
 
-                    <View style={{ width: 30, height: 'auto', position: 'absolute', bottom: -40, right: 20, alignItems: 'center', justifyContent: 'center' }}>
-                        <View style={[styles.triangleCorner, { position: "absolute", bottom: -40, right: 20 }]} />
-                        <Text style={{ color: "#FFF", zIndex: 5, textAlign: 'center', fontSize: SIZES.medium }}>5%</Text>
-                        <View style={[styles.triangleLeftCorner, { position: "absolute", bottom: -40, right: 20, }]} />
-                    </View>
-                </Animated.View>
+                    bounces={false}
+                    ref={scrollViewRef}
+                    onScrollEndDrag={(event) => {
+                        setTimeout(() => {
+                            /*@ts-ignore*/
+                            if (scrollY._value < 110 && scrollY._value > 50) {
+                                Animated.timing(scrollY, {
+                                    toValue: 110,
+                                    duration: 300,
+                                    useNativeDriver: false
+                                }).start()
+                            }
+                        }, 50)
 
-                {/*Main container */}
-                <Animated.ScrollView
-                    style={{ paddingTop: padding }}
-                    onScroll={(e) => {
-                        scrollY.setValue(e.nativeEvent.contentOffset.y)
-                        scrolling.setValue(e.nativeEvent.contentOffset.y)
                     }}
+                    onScroll={handleScrollViewScroll}
+                    scrollEnabled={isScrollEnabled}
+                    scrollEventThrottle={16}
                 >
-                    <View style={{ padding: SIZES.small }}>
-                        <Text style={{ fontSize: SIZES.large }}>{currentEstablishMent?.title}</Text>
-                        <Text style={{ fontSize: SIZES.medium, fontWeight: '400', color: 'gray' }}>Пр. Алии Молдагуловой 46 "Капитал плаза" (цокольный этаж)</Text>
+
+                    <Animated.View style={{ height: flatlistHeight }} >
+                        <FlatList
+                            ref={flatListRef}
+                            data={currentEstablishMent?.imgs}
+                            renderItem={({ item, index }) => (
+                                <View style={{ width: SCREEN_WIDTH, height: "100%", justifyContent: 'center', alignItems: 'center' }}>
+                                    <Image source={item} style={{ flex: 1, resizeMode: 'cover', width: "100%", height: "100%" }} />
+                                    <Animated.View style={{
+                                        opacity: flatListOpacity,
+                                        backgroundColor: 'white',
+                                        position: 'absolute',
+                                        width: '100%',
+                                        height: '100%',
+                                        zIndex: 2
+                                    }} />
+                                </View>
+                            )}
+                            snapToInterval={SCREEN_WIDTH}
+                            snapToAlignment='center'
+                            decelerationRate={'normal'}
+                            disableIntervalMomentum
+                            pagingEnabled
+                            getItemLayout={(data, index) => (
+                                { length: SCREEN_WIDTH, offset: SCREEN_WIDTH * index, index }
+                            )}
+                            onScroll={handleScroll}
+                            scrollEventThrottle={1}
+                            showsHorizontalScrollIndicator={false}
+                            keyExtractor={index => index}
+                            horizontal
+                        />
+                        <Animated.View style={{
+                            opacity: flatListIndicatorOpacity,
+                            position: 'absolute',
+                            bottom: 10,
+                            right: 10
+                        }}>
+                            <Text style={{ color: "#FFFFFF", flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', fontSize: SIZES.medium, padding: SIZES.xSmall, borderRadius: 10 }}>{currentIndex + 1}/{currentEstablishMent?.imgs.length}</Text>
+                        </Animated.View>
+
+                        <View style={{ width: 30, height: 'auto', position: 'absolute', bottom: -40, right: 20, alignItems: 'center', justifyContent: 'center' }}>
+                            <View style={[styles.triangleCorner, { position: "absolute", bottom: -40, right: 20 }]} />
+                            <Text style={{ color: "#FFF", zIndex: 5, textAlign: 'center', fontSize: SIZES.medium }}>5%</Text>
+                            <View style={[styles.triangleLeftCorner, { position: "absolute", bottom: -40, right: 20, }]} />
+                        </View>
+                    </Animated.View>
+                    <View>
+                        <View style={{ padding: SIZES.small }}>
+                            <Text style={{ fontSize: SIZES.large }}>{currentEstablishMent?.title}</Text>
+                            <Text style={{ fontSize: SIZES.medium, fontWeight: '400', color: 'gray' }}>Пр. Алии Молдагуловой 46 "Капитал плаза" (цокольный этаж)</Text>
+                        </View>
+                        <View style={{ width: "100%", flexDirection: 'row', justifyContent: "space-between", paddingLeft: SIZES.small, paddingRight: SIZES.small }}>
+                            <TouchableOpacity style={{ width: 30, height: 30, borderColor: 'gray', borderRadius: 15, borderWidth: 1, flexDirection: "row", justifyContent: "center", alignItems: "center", padding: 5 }}>
+                                <Image source={icons.share} style={{ width: 20, height: 20, tintColor: COLORS.primary, marginRight: 2 }}></Image>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={onLikePressed} style={{ position: 'relative', width: 32, height: 32 }}>
+                                <ReAnimated.View
+                                    style={[outlineStyle, {
+                                        width: 32, height: 32
+                                    }]}
+                                >
+                                    <MaterialCommunityIcons name={"heart-outline"} size={32} color={"gray"} />
+                                </ReAnimated.View>
+
+                                <ReAnimated.View style={[fillStyle, {
+                                    width: 32, height: 32, position: 'absolute'
+                                }]}>
+                                    <MaterialCommunityIcons name={"heart"} size={32} color={"red"} />
+                                </ReAnimated.View>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                    <View style={{ width: "100%", flexDirection: 'row', justifyContent: "space-between", paddingLeft: SIZES.small, paddingRight: SIZES.small }}>
-                        <TouchableOpacity style={{ width: 30, height: 30, borderColor: 'gray', borderRadius: 15, borderWidth: 1, flexDirection: "row", justifyContent: "center", alignItems: "center", padding: 5 }}>
-                            <Image source={icons.share} style={{ width: 20, height: 20, tintColor: COLORS.primary, marginRight: 2 }}></Image>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={onLikePressed} style={{ position: 'relative', width: 32, height: 32 }}>
-                            <ReAnimated.View
-                                style={[outlineStyle, {
-                                    width: 32, height: 32
-                                }]}
-                            >
-                                <MaterialCommunityIcons name={"heart-outline"} size={32} color={"gray"} />
-                            </ReAnimated.View>
+                    <ScrollView 
+                    style={{height:'auto',flex:1 }}>
+                        <DetailedInfo establishment={currentEstablishMent}></DetailedInfo>
 
-                            <ReAnimated.View style={[fillStyle, {
-                                width: 32, height: 32, position: 'absolute'
-                            }]}>
-                                <MaterialCommunityIcons name={"heart"} size={32} color={"red"} />
-                            </ReAnimated.View>
-                        </TouchableOpacity>
-                    </View>
+                    </ScrollView>
 
+                    {/* Main container */}
+                </ScrollView>
 
-                    <DetailedInfo establishment={currentEstablishMent}></DetailedInfo>
-                    {/* <Details></Details> */}
-                    {/* <Testimomials></Testimomials> */}
-                </Animated.ScrollView>
             </SafeAreaView >
         </>
 
@@ -239,4 +308,5 @@ const styles = StyleSheet.create({
         transformOrigin: 'left center',
         transform: [{ translateX: 20 }, { translateY: 0 }]
     },
+
 });

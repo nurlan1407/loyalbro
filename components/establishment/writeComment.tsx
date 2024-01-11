@@ -75,7 +75,6 @@ const WriteComment: React.FC<WriteCommentModalProps> = ({ isVisible, height, clo
     }
 
     useEffect(() => {
-        console.log(isError);
         
         if (isError==true) {
             startShakingAnimation()

@@ -11,18 +11,24 @@ import { FlatList } from 'react-native-gesture-handler'
 // import Animated, { interpolateColor, useAnimatedStyle, useSharedValue, withTiming, SharedValue } from 'react-native-reanimated'
 
 const SCREEN_WIDTH = Dimensions.get('screen').width
+const SCREEN_HEIGHT = Dimensions.get('screen').height
+
 type SubPage = {
     name: string
     title: string
     Node: ReactNode
 }
-const subPages = [
-
-    <Details ></Details>,
-
-
-
-    <Testimomials ></Testimomials>
+const subPages: SubPage[] = [
+    {
+        name: 'details',
+        title: "Детали",
+        Node: <Details></Details>
+    },
+    {
+        name: 'testimonials',
+        title: "Отзывы",
+        Node: <Testimomials ></Testimomials>
+    }
 
 ]
 const Tab = createMaterialTopTabNavigator();
@@ -32,39 +38,26 @@ interface DetailedInfoProps {
 }
 
 const DetailedInfo: React.FC<DetailedInfoProps> = () => {
-    const sliderRef = useRef<FlatList>(null)
-    const [currentPage, setCurrentPage] = useState(subPages[0])
+    const scrollViewRef = useRef<FlatList>(null);
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
-    const [heights, setHeights] = useState<number[]>(new Array(subPages.length).fill('auto'));
-    const [currentHeight, setCurrentHeight] = useState(heights[0])
-    const [isVisible, setIsVisible] = useState(true);
-    const [nextPage, setNextPage] = useState<SubPage | null>(null);
+    const [heights, setHeights] = useState<number[]>(new Array(subPages.length).fill(0)); // Initialize with 0
 
-
-
-    const changePage = (pageIndex: number) => {
-        // sliderRef.current?.scrollTo({ x: SCREEN_WIDTH * pageIndex, animated: true });
-        // setCurrentPageIndex(pageIndex);
-    };
+    // const changePage = (pageIndex: number) => {
+    //     scrollViewRef.current?.scrollTo({ x: SCREEN_WIDTH * pageIndex, animated: true });
+    //     setCurrentPageIndex(pageIndex);
+    // };
 
     const onLayout = (event: LayoutChangeEvent, index: number) => {
         const layoutHeight = event.nativeEvent.layout.height;
 
-        if (layoutHeight > 0) {
-            setHeights(prevHeights => {
-                const newHeights = [...prevHeights];
-                newHeights[index] = layoutHeight;
-                return newHeights;
-            });
-        }
+        setHeights(prevHeights => {
+            const newHeights = [...prevHeights];
+            newHeights[index] = layoutHeight;
+            return newHeights;
+        });
     };
 
-    // useEffect(() => {
-    //     const newIndex = currentPageIndex;
-    //     sliderRef.current?.scrollTo({ x: SCREEN_WIDTH * newIndex, animated: true });
-    // }, [currentPageIndex]);
-    const [contentHeights, setContentHeights] = useState({});
-
+    const [currentPage, setCurrentPage] = useState(subPages[0])
 
     return (
         <>
@@ -78,61 +71,49 @@ const DetailedInfo: React.FC<DetailedInfoProps> = () => {
                         <Text
                             key={index}
                             style={{ fontWeight: '600', color: 'gray' }}
-                            onPress={() => { changePage(index) }}
+                        // onPress={() => { changePage(subPages[index]) }}
                         >
-                            asdasda
+                            {page.title}
                         </Text>
                     )
                 })}
             </View>
-            <View style={{ height: heights[currentPageIndex] }}>
-                <FlatList
-                    ref={sliderRef}
-                    horizontal
-                    pagingEnabled
-                    data={subPages}
-                    renderItem={({ item }) => {
-                        return (
-                            <View style={{flex:1,width:SCREEN_WIDTH}}>
-                                {item}
-                            </View>
-                        )
-
-                    }}
-                    showsVerticalScrollIndicator
-                    showsHorizontalScrollIndicator={false}
-                    onScroll={(event) => {
-                        const offset = event.nativeEvent.contentOffset.x
-                        const newIndex = Math.round(offset / SCREEN_WIDTH)
-                        if (newIndex !== currentPageIndex) {
-                            setCurrentPageIndex(newIndex)
-                        }
-                    }}
-                    onMomentumScrollEnd={(e) => {
-                        const newIndex = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+            <FlatList
+                ref={scrollViewRef}
+                horizontal
+                data={subPages}
+                pagingEnabled
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={(item, index) => item.id || index.toString()}
+                onScroll={(event) => {
+                    const offset = event.nativeEvent.contentOffset.x;
+                    const newIndex = Math.round(offset / SCREEN_WIDTH);
+                    if (newIndex !== currentPageIndex) {
                         setCurrentPageIndex(newIndex);
-                    }}
-                    // style={{ height: heights[currentPageIndex] === 0 ? 'auto' : heights[currentPageIndex] }}
-                    scrollEventThrottle={16}
-                >
-                    {/* 
-                    <Details></Details>
-                    <Testimomials></Testimomials> */}
-                    {/* {subPages.map((page, index) =>
-                        <View style={{
-                            width: SCREEN_WIDTH, display: 'flex', flex: 1,
-                        }} onLayout={((event) => {
-                            const { height } = event.nativeEvent.layout;
+                        setCurrentPage(subPages[newIndex]);
+                    }
+                }}
+                scrollEventThrottle={16}
+                getItemLayout={(data, index) => (
+                    { length: SCREEN_WIDTH, offset: SCREEN_WIDTH * index, index }
+                )}
+                renderItem={({ item, index }) => (
+                    <View
+                        key={index}
+                        style={{ width: SCREEN_WIDTH }}
+                        onLayout={(event) => onLayout(event, index)}
+                    >
+                        <Text>
+                            {/* Your long text here */}
+                        </Text>
+                        {item.Node}
+                    </View>
+                )}
+            >
 
-                            setContentHeights((prevHeights) => ({ ...prevHeights, [page.name]: height }));
+            </FlatList >
 
-                        })}>
-                            {page.Node}
-                        </View>
-                    )} */}
-                </FlatList>
-
-            </View>
 
 
 

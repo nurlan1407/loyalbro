@@ -37,15 +37,10 @@ const Testimomials:React.FC<TestimonialsProps> =()=> {
     const onTouchEnd = () => {
         setIsStarsTouching(false)
     }
-    useEffect(() => {
-        console.log('LOX');
-
-    }, [])
-
+   
     const [isModalVisible, setIsModalVisible] = useState(false)
     return (
         <View style={{flex:1}} onLayout={(e) => {
-            console.log('comments' + e.nativeEvent.layout.height);
         }}>
             <WriteComment isVisible={isModalVisible} height={screenHeight * 0.3} closeModal={() => { setIsModalVisible(false) }}></WriteComment>
             <View style={styles.container} >
