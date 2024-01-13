@@ -14,6 +14,7 @@ import Testimomials from '~/components/establishment/testimonials';
 import { Ionicons } from '@expo/vector-icons';
 import DetailedInfo from '~/components/establishment/establishmentDetails';
 
+
 const SCREEN_WIDTH = Dimensions.get('screen').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
@@ -117,6 +118,7 @@ export default function Page({ navigation }) {
             reset()
         }, 1000)
     }
+
     function handleScrollViewScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
         const positionY = event.nativeEvent.contentOffset.y;
 
@@ -128,17 +130,22 @@ export default function Page({ navigation }) {
         //     setIsScrollEnabled(true); // Включаем скролл обратно, когда пользователь прокрутил назад
         // }
 
-        // console.log(positionY);
+        console.log(positionY);
 
-        if (positionY >= 100) {
-            setIsScrollEnabled(false)
-        }
         Animated.event(
             [{ nativeEvent: { contentOffset: { y: scrollY } } }],
             { useNativeDriver: false }
         )(event);
     }
 
+    function onTabPress(){
+        Animated.timing(scrollY,{
+            toValue:0,
+            duration:150,
+            useNativeDriver:false
+        })
+        scrollViewRef.current?.scrollTo({y:0})
+    }
     return (
         <>
             <StatusBar barStyle={'dark-content'} backgroundColor={"#00000000"} translucent={false}></StatusBar>
@@ -174,7 +181,6 @@ export default function Page({ navigation }) {
                     <Animated.Text style={{ fontSize: SIZES.large, color: textColor }}>{currentEstablishMent?.title}</Animated.Text>
                 </Animated.View>
                 <ScrollView
-
                     bounces={false}
                     ref={scrollViewRef}
                     onScrollEndDrag={(event) => {
@@ -267,11 +273,11 @@ export default function Page({ navigation }) {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <ScrollView 
-                    style={{height:'auto',flex:1 }}>
-                        <DetailedInfo establishment={currentEstablishMent}></DetailedInfo>
+                    <View
+                        style={{ height: 'auto', flex: 1 }}>
+                        <DetailedInfo onTabPress={onTabPress} establishment={currentEstablishMent}></DetailedInfo>
 
-                    </ScrollView>
+                    </View>
 
                     {/* Main container */}
                 </ScrollView>

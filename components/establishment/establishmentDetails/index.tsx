@@ -1,5 +1,5 @@
 import React, { ReactNode, useState, useEffect, useRef } from 'react'
-import { View, Text, Animated, ScrollView, Dimensions, LayoutChangeEvent } from "react-native"
+import { View, Text, Animated, ScrollView, Dimensions, LayoutChangeEvent, TouchableOpacity } from "react-native"
 import { Establishment } from '~/types/Establishment'
 import { SIZES } from '~/constants/theme'
 import Details from './details'
@@ -28,16 +28,26 @@ const subPages: SubPage[] = [
         name: 'testimonials',
         title: "Отзывы",
         Node: <Testimomials ></Testimomials>
+    },
+    {
+        name: 'bonuses',
+        title: "Бонусы",
+        Node: <Text>Monuses</Text>
+    },
+    {
+        name: 'map',
+        title: "Карта",
+        Node: <Text>Monuses</Text>
     }
-
 ]
 const Tab = createMaterialTopTabNavigator();
 
 interface DetailedInfoProps {
     establishment: Establishment | null,
+    onTabPress: () => void
 }
 
-const DetailedInfo: React.FC<DetailedInfoProps> = () => {
+const DetailedInfo: React.FC<DetailedInfoProps> = ({ onTabPress }) => {
     const scrollViewRef = useRef<FlatList>(null);
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
     const [heights, setHeights] = useState<number[]>(new Array(subPages.length).fill(0)); // Initialize with 0
@@ -47,17 +57,20 @@ const DetailedInfo: React.FC<DetailedInfoProps> = () => {
     //     setCurrentPageIndex(pageIndex);
     // };
 
-    const onLayout = (event: LayoutChangeEvent, index: number) => {
-        const layoutHeight = event.nativeEvent.layout.height;
+    const [currentPage, setCurrentPage] = useState(subPages[0]);
+    const [isVisible, setIsVisible] = useState(true); // Добавляем состояние для управления видимостью
 
-        setHeights(prevHeights => {
-            const newHeights = [...prevHeights];
-            newHeights[index] = layoutHeight;
-            return newHeights;
-        });
+    const changePage = (newPage: SubPage) => {
+        if (newPage !== currentPage) {
+            setIsVisible(false); // Сначала скрываем текущую страницу
+            setTimeout(() => {
+                setCurrentPage(newPage); // Затем обновляем текущую страницу
+                setIsVisible(true); // И делаем новую страницу видимой
+            }, 300); // Задержка должна соответствовать длительности анимации исчезновения
+        }
     };
 
-    const [currentPage, setCurrentPage] = useState(subPages[0])
+    // ... остальной код
 
     return (
         <>
@@ -66,62 +79,28 @@ const DetailedInfo: React.FC<DetailedInfoProps> = () => {
                 justifyContent: "space-between",
                 padding: SIZES.medium,
             }}>
-                {subPages.map((page, index) => {
-                    return (
+                {subPages.map((page, index) => (
+                    <TouchableOpacity
+                        // style={{padding:SIZES.xSmall}}
+                        onPress={() => { onTabPress(); changePage(page) }}
+
+                    >
                         <Text
                             key={index}
-                            style={{ fontWeight: '600', color: 'gray' }}
-                        // onPress={() => { changePage(subPages[index]) }}
+                            style={{ fontWeight: '600',fontSize:SIZES.medium, color: currentPage.name == page.name ? 'black' : 'gray' }}
                         >
                             {page.title}
                         </Text>
-                    )
-                })}
+                    </TouchableOpacity>
+
+                ))}
             </View>
-            <FlatList
-                ref={scrollViewRef}
-                horizontal
-                data={subPages}
-                pagingEnabled
-                showsVerticalScrollIndicator={false}
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(item, index) => item.id || index.toString()}
-                onScroll={(event) => {
-                    const offset = event.nativeEvent.contentOffset.x;
-                    const newIndex = Math.round(offset / SCREEN_WIDTH);
-                    if (newIndex !== currentPageIndex) {
-                        setCurrentPageIndex(newIndex);
-                        setCurrentPage(subPages[newIndex]);
-                    }
-                }}
-                scrollEventThrottle={16}
-                getItemLayout={(data, index) => (
-                    { length: SCREEN_WIDTH, offset: SCREEN_WIDTH * index, index }
-                )}
-                renderItem={({ item, index }) => (
-                    <View
-                        key={index}
-                        style={{ width: SCREEN_WIDTH }}
-                        onLayout={(event) => onLayout(event, index)}
-                    >
-                        <Text>
-                            {/* Your long text here */}
-                        </Text>
-                        {item.Node}
-                    </View>
-                )}
-            >
-
-            </FlatList >
-
-
-
-
-
+            <Fade isVisible={isVisible}>
+                {currentPage.Node}
+            </Fade>
         </>
-
-    )
-}
+    );
+};
 
 
 export default DetailedInfo

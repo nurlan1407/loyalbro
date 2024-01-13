@@ -9,7 +9,7 @@ import { useRouter } from 'expo-router'
 import WriteComment from '~/components/establishment/writeComment'
 
 const LOREM = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime fuga iure, quod, illo quo ullam animi, atque eum eveniet recusandae voluptatum quia officia dolore quas libero. Asperiores nobis modi ut.
-Atque quas error numquam blanditiis! Corrupti veritatis facere ex debitis possimus similique aperiam nulla eos enim. Ullam adipisci error totam exercitationem blanditiis qui inventore, nemo id libero maxime corrupti possimus!`
+Atque quas error`
 
 const comments = [{
     text: LOREM, username: "NUrlan", date: Date.now(),
@@ -22,10 +22,10 @@ const comments = [{
 
 }]
 
-interface TestimonialsProps{
-  
+interface TestimonialsProps {
+
 }
-const Testimomials:React.FC<TestimonialsProps> =()=> {
+const Testimomials: React.FC<TestimonialsProps> = () => {
     const screenHeight = Dimensions.get('screen').height
     const stars = Array.from({ length: 5 }, (_, i) => i + 1)
     const [isStarsTouching, setIsStarsTouching] = useState(false)
@@ -37,10 +37,10 @@ const Testimomials:React.FC<TestimonialsProps> =()=> {
     const onTouchEnd = () => {
         setIsStarsTouching(false)
     }
-   
+
     const [isModalVisible, setIsModalVisible] = useState(false)
     return (
-        <View style={{flex:1}} onLayout={(e) => {
+        <View style={{ flex: 1 }} onLayout={(e) => {
         }}>
             <WriteComment isVisible={isModalVisible} height={screenHeight * 0.3} closeModal={() => { setIsModalVisible(false) }}></WriteComment>
             <View style={styles.container} >
@@ -99,8 +99,12 @@ const Testimomials:React.FC<TestimonialsProps> =()=> {
                             </TouchableOpacity>
                         )}
                     </View>
-                    <LinkButton buttonStyle={{ paddingTop: 15 }} onPress={() => { }} title={'Написать отзыв'}></LinkButton>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <LinkButton buttonStyle={{ paddingTop: 15 }} onPress={() => { }} title={'Написать отзыв'}></LinkButton>
+                        <LinkButton buttonStyle={{ paddingTop: 15 }} onPress={() => { }} title={'Все отзывы'}></LinkButton>
+                    </View>
                 </View>
+
 
                 {comments.map((comment) =>
                     <Comment text={comment.text} date={comment.date} username={comment.username}></Comment>

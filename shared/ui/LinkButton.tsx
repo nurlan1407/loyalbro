@@ -5,13 +5,13 @@ import { COLORS, SIZES } from '~/constants/theme';
 interface LinkButtonProps {
     onPress: () => void,
     title: string,
-    buttonStyle: ViewStyle
+    buttonStyle: any
 }
 
 const LinkButton: React.FC<LinkButtonProps> = ({ onPress, title, buttonStyle }) => {
     return (
         <TouchableOpacity onPress={onPress}>
-            <Text style={StyleSheet.flatten([buttonStyle,  styles.linkText ])}>{title}</Text>
+            <Text style={StyleSheet.flatten([styles.linkText,buttonStyle ])}>{title}</Text>
         </TouchableOpacity>
     );
 };
