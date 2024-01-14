@@ -46,8 +46,6 @@ const CodeVerificationScreen: React.FC<CodeVerificationProps> = ({ onVerify, onR
         setSelectedIndex(value.length - 1)
     }
     function onDelete(e: NativeSyntheticEvent<TextInputKeyPressEventData>) {
-        console.log(e.nativeEvent.key);
-        
         if (e.nativeEvent.key === 'Backspace') {
             console.log(e.nativeEvent.key)
             setCode(code.slice(0, code.length - 1))
@@ -55,7 +53,9 @@ const CodeVerificationScreen: React.FC<CodeVerificationProps> = ({ onVerify, onR
     }
     function onVerifyPress(){
         inputRef.current?.blur()
+        router.push('/auth/auth_final')
     }
+    
     return (
         <SafeAreaView style={{ backgroundColor: COLORS.white, flex: 1, padding: SIZES.large, paddingTop: 150 }}>
             <View style={styles.container}>

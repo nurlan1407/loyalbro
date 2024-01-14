@@ -14,6 +14,9 @@ import Button from "~/shared/ui/Button";
 import { COLORS } from "~/constants/theme";
 import LinkButton from "~/shared/ui/LinkButton";
 import { router } from "expo-router";
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from "~/lib/redux";
+
 
 const Auth: React.FC = () => {
     const [isAgree, setIsAgree] = useState<boolean>(false)
@@ -22,6 +25,10 @@ const Auth: React.FC = () => {
     const [valid, setValid] = useState(false);
     const [showMessage, setShowMessage] = useState(false);
     const phoneInput = useRef<PhoneInput>(null);
+    const dispatch = useDispatch();
+    const userName = useSelector((state: RootState) => state);
+    console.log(userName);
+    
     return (
         <SafeAreaView style={{ backgroundColor: "#FFF", flex: 1 }}>
             <View style={styles.container}>
