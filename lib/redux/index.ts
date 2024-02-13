@@ -5,8 +5,7 @@ import FactsReducer from '~/entities/user/slice';
 export const store = configureStore({
     reducer: {
         // Add your reducers here
-        FactsReducer:FactsReducer
-        
+        userReducer: FactsReducer
     },
 });
 

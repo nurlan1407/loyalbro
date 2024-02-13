@@ -16,11 +16,12 @@ import LinkButton from "~/shared/ui/LinkButton";
 import { router } from "expo-router";
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from "~/lib/redux";
+import { sendNumber } from "~/entities/user/api";
+import { Action, ThunkAction, unwrapResult } from "@reduxjs/toolkit";
 
 
 const Auth: React.FC = () => {
     const [isAgree, setIsAgree] = useState<boolean>(false)
-
     const [value, setValue] = useState("");
     const [valid, setValid] = useState(false);
     const [showMessage, setShowMessage] = useState(false);
@@ -28,7 +29,6 @@ const Auth: React.FC = () => {
     const dispatch = useDispatch();
     const userName = useSelector((state: RootState) => state);
     console.log(userName);
-    
     return (
         <SafeAreaView style={{ backgroundColor: "#FFF", flex: 1 }}>
             <View style={styles.container}>
@@ -54,7 +54,12 @@ const Auth: React.FC = () => {
                     ></Checkbox>
                     <Text style={styles.checkboxText}>Lorem ipsum olestiae reprehenderit recusandae quo nobis soluta neque fuga rerum odio impedit magni. <LinkButton buttonStyle={{ fontSize: SIZES.small }} onPress={() => { }} title="lorem lorem loadasd"></LinkButton></Text>
                 </View>
-                <Button onPress={() => { router.push('/auth/code_verification') }} buttonStyle={{}}>
+                <Button onPress={async () => {
+                    //@ts-ignore
+                    const actionResult: ThunkAction = await dispatch(sendNumber(value))
+                    const result = unwrapResult(actionResult)
+                    router.push({ pathname: `/auth/code_verification`, params: { requestId: result.request_id } })
+                }} buttonStyle={{}}>
                     <Text style={{ textTransform: 'uppercase', color: COLORS.white }}>Войти в аккаунт</Text>
                 </Button>
             </View>
@@ -74,14 +79,13 @@ const styles = StyleSheet.create({
     },
     logo: {
         fontSize: 45,
-        // If you're using a custom font, specify it here
         fontFamily: 'Genos',
         // fontStyle:'italic',
-        color: COLORS.primary, // Example color: orange
+        color: COLORS.primary, 
     },
     checkboxContainer: {
         flexDirection: 'row',
-        alignItems: 'center', // Align items vertically
+        alignItems: 'center', 
     },
     checkbox: {
         alignSelf: 'center',

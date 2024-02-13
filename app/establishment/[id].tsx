@@ -130,7 +130,6 @@ export default function Page({ navigation }) {
         //     setIsScrollEnabled(true); // Включаем скролл обратно, когда пользователь прокрутил назад
         // }
 
-        console.log(positionY);
 
         Animated.event(
             [{ nativeEvent: { contentOffset: { y: scrollY } } }],

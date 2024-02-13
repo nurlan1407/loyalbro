@@ -7,19 +7,24 @@ import Button from "~/shared/ui/Button";
 import DatePicker from "~/components/DatePicker";
 import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import formatDate from "~/shared/lib/formateDate";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { RootState } from "~/lib/redux";
+import { editUserInfo } from "~/entities/user/api";
+import { router } from "expo-router";
 
 const AuthFinal: React.FC = () => {
+    const dispatch = useDispatch()
+    const useAppSelector = useSelector((state:RootState)=>state.userReducer)
+    const {isLoading,user,error} = useAppSelector
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
-    const [birthDat, setBirthday] = useState('')
-    const [date, setDate] = useState(new Date());
-    const [mode, setMode] = useState('date');
+    const [birthDay, setBirthday] = useState('')
+    const [date, setDate] = useState<Date|null>(null);
     const [show, setShow] = useState(false);
 
-
+    const [isValid,setIsValid] = useState<boolean|null>(null)
     function handleDateChange(event: DateTimePickerEvent, selectedDate?: Date) {
-        console.log(event.type);
-        
         if (event.type == 'set') {
             const currentDate = selectedDate
             setDate(currentDate!)
@@ -28,7 +33,15 @@ const AuthFinal: React.FC = () => {
             setShow(false)
         }
     }
-    
+    async function onSubmit() {
+        if(!date || firstName.length ==0 || lastName.length == 0){
+            return
+        }
+        const timeStamp = date.getTime()
+        //@ts-ignore
+        await dispatch(editUserInfo({firstName:firstName,lastName:lastName,birthday:timeStamp})).unwrap()
+        router.push('/(tabs)')
+    }
     return (
         <SafeAreaView style={{ backgroundColor: COLORS.white, flex: 1, padding: SIZES.large, paddingTop: 150 }}>
             <View style={styles.container}>
@@ -64,7 +77,7 @@ const AuthFinal: React.FC = () => {
                         <CustomTextInput
                             style={[styles.datePicker]}
                             onChangeText={setLastName}
-                            value={formatDate(date)}
+                            value={formatDate(date?date:new Date())}
                             placeholder="Sat Jul 15 2003"
                             maxLength={20}
                             styles={{}}
@@ -72,10 +85,10 @@ const AuthFinal: React.FC = () => {
                         ></CustomTextInput>
                     </TouchableOpacity>
                 </View>
-                <Button onPress={() => { }} buttonStyle={{ width: "100%" }}><Text style={{ color: "#FFF" }}>Авторизоваться</Text></Button>
-
+                {isValid == false && <Text style={{color:'red',fontSize:SIZES.medium}}>Заполните все поля</Text>}
+                <Button onPress={onSubmit} buttonStyle={{ width: "100%" }}><Text style={{ color: "#FFF" }}>Авторизоваться</Text></Button>
                 {show && <DatePicker
-                    date={date}
+                    date={date ? date : new Date()}
                     handleDateChange={handleDateChange}
                 >
                 </DatePicker>
