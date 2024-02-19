@@ -15,6 +15,11 @@ const share = require("../assets/icons/share.png") as string
 const instagram = require("../assets/icons/Instagram.png") as string
 const ratingFilled = require("../assets/icons/rating-filled.png") as string
 const arrow = require('../assets/icons/arrow.png') as string
+const email = require("../assets/icons/icon_main.png") as string
+const phone = require("../assets/icons/icon_whatsapp.png") as string
+const instagram_contact = require("../assets/icons/icon_instagram.png") as string
+
+
 
 const icons = {
     card,
@@ -33,7 +38,10 @@ const icons = {
     share,
     instagram,
     ratingFilled,
-    arrow
+    arrow,
+    email,
+    phone,
+    instagram_contact
 }
 
 export default icons

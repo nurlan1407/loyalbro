@@ -4,7 +4,7 @@ import { COLORS, SIZES } from "~/constants/theme";
 import CustomTextInput from "~/shared/ui/TextInput";
 import images from "~/constants/images";
 import Button from "~/shared/ui/Button";
-import DatePicker from "~/components/DatePicker";
+import DatePicker from "~/shared/ui/DatePicker";
 import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import formatDate from "~/shared/lib/formateDate";
 import { useDispatch } from "react-redux";

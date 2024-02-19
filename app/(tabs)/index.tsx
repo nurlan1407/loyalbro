@@ -12,7 +12,7 @@ export default function TabOneScreen() {
 
   return (
     <SafeAreaView>
-      <ScrollView>
+      <ScrollView >
         <View style={styles.container}>
           <Adverts></Adverts>
           <Catergories></Catergories>

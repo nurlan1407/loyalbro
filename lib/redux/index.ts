@@ -1,11 +1,13 @@
 // store.ts
 import { configureStore } from '@reduxjs/toolkit';
 import FactsReducer from '~/entities/user/slice';
+import EstablishmentsReducer from '~/entities/establishment/slice';
 
 export const store = configureStore({
     reducer: {
         // Add your reducers here
-        userReducer: FactsReducer
+        userReducer: FactsReducer,
+        establishments:EstablishmentsReducer
     },
 });
 

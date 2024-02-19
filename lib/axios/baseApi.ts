@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig, Method } from 'axios';
 import Constants from "expo-constants";
 
 const { manifest } = Constants
-const apiUrl = 'http://192.168.0.103:3001'
+const apiUrl = 'http://192.168.0.100:3001'
 
 const axiosInstance = axios.create({
     // You can set base URL and other default config here
@@ -13,25 +13,25 @@ const axiosInstance = axios.create({
     },
 });
 
-const makeRequest = async<T=any> (
+const makeRequest = async<T = any>(
     method: Method,
     url: string,
     data?: any,
     config?: AxiosRequestConfig
 ) => {
-    try {        
+    try {
         const response = await axiosInstance.request<T>({
             method,
             url,
             data,
             ...config,
         });
-        
+
         return response;
-    } catch (error) {        
+    } catch (error) {
         // Handle or throw error
         if (axios.isAxiosError(error) && error.response) {
-            
+
             // Axios error with response (e.g., 4xx, 5xx response)
             throw error.response.data;
         } else {
@@ -42,3 +42,5 @@ const makeRequest = async<T=any> (
 };
 
 export default makeRequest;
+
+

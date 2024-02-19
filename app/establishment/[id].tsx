@@ -13,12 +13,16 @@ import Details from '~/components/establishment/establishmentDetails/details';
 import Testimomials from '~/components/establishment/testimonials';
 import { Ionicons } from '@expo/vector-icons';
 import DetailedInfo from '~/components/establishment/establishmentDetails';
+import ImageSlider from '~/components/establishment/slider';
+import { useAppSelector } from '~/hooks/reduxHooks';
+import { RootState } from '~/lib/redux';
 
 
 const SCREEN_WIDTH = Dimensions.get('screen').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
 
 export default function Page({ navigation }) {
+    const currentEstablishment = useAppSelector((state:RootState)=>state.establishments.currentEst)
     const [isScrollEnabled, setIsScrollEnabled] = useState(true);
     const liked = useSharedValue(0);
     function onLikePressed() {
@@ -43,28 +47,12 @@ export default function Page({ navigation }) {
 
 
     const { id } = useLocalSearchParams();
-    const [currentEstablishMent, setCurrentEstablishMent] = useState<Establishment | null>(null)
 
     const [isAtTop, setIsAtTop] = useState(true);
-    const flatListRef = useRef(null);
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        const contentOffsetX = event.nativeEvent.contentOffset.x;
-        const viewSize = event.nativeEvent.layoutMeasurement.width;
-        const newIndex = Math.floor(contentOffsetX / (SCREEN_WIDTH - 10));
-        if (newIndex !== currentIndex) {
-            setCurrentIndex(newIndex);
-        }
-    };
-    useEffect(() => {
-        const est = EstablishmentDemo.find(establishment => establishment.id === parseInt(id as string))
-
-        if (!est) {
-            return
-        }
-        setCurrentEstablishMent(est)
-    }, [currentEstablishMent])
+    
+  
 
 
 
@@ -96,11 +84,6 @@ export default function Page({ navigation }) {
         outputRange: [1, 0], // Change from transparent to white
         extrapolate: 'clamp',  // This will clamp the output color so it doesn't go beyond the outputRange
     });
-    const headerOpacity = scrollY.interpolate({
-        inputRange: [0, 70],  // Adjust these numbers to control when the color starts and finishes changing
-        outputRange: [0.2, 1], // Change from transparent to white
-        extrapolate: 'clamp',  // This will clamp the output color so it doesn't go beyond the outputRange
-    });
     const shadowOpacity = scrollY.interpolate({
         inputRange: [0, 70],
         outputRange: [1, 0], // Тень начинается полупрозрачной и становится невидимой
@@ -121,16 +104,6 @@ export default function Page({ navigation }) {
 
     function handleScrollViewScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
         const positionY = event.nativeEvent.contentOffset.y;
-
-        // Если пользователь прокрутил достаточно далеко и скролл включен
-        // if (positionY >= 100 && isScrollEnabled) {
-        //     setIsScrollEnabled(false); // Выключаем дополнительный скролл
-        //     scrollViewRef.current?.scrollTo({ y: 99, animated: true }); // Прокручиваем немного назад
-        // } else if (positionY < 100 && !isScrollEnabled) {
-        //     setIsScrollEnabled(true); // Включаем скролл обратно, когда пользователь прокрутил назад
-        // }
-
-
         Animated.event(
             [{ nativeEvent: { contentOffset: { y: scrollY } } }],
             { useNativeDriver: false }
@@ -145,12 +118,20 @@ export default function Page({ navigation }) {
         })
         scrollViewRef.current?.scrollTo({y:0})
     }
+    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const contentOffsetX = event.nativeEvent.contentOffset.x;
+        const viewSize = event.nativeEvent.layoutMeasurement.width;
+        const newIndex = Math.floor(contentOffsetX / (SCREEN_WIDTH - 10));
+        if (newIndex !== currentIndex) {
+            setCurrentIndex(newIndex);
+        }
+    };
     return (
         <>
             <StatusBar barStyle={'dark-content'} backgroundColor={"#00000000"} translucent={false}></StatusBar>
             <SafeAreaView style={{ flex: 1 }}>
                 <Stack.Screen options={{
-                    headerTitle: currentEstablishMent?.title,
+                    headerTitle: currentEstablishment?.title,
                     headerTransparent: false,
                     headerShown: false,
                 }} />
@@ -177,7 +158,7 @@ export default function Page({ navigation }) {
                     <TouchableOpacity>
                         <Ionicons name="arrow-back" size={30} />
                     </TouchableOpacity>
-                    <Animated.Text style={{ fontSize: SIZES.large, color: textColor }}>{currentEstablishMent?.title}</Animated.Text>
+                    <Animated.Text style={{ fontSize: SIZES.large, color: textColor }}>{currentEstablishment?.title}</Animated.Text>
                 </Animated.View>
                 <ScrollView
                     bounces={false}
@@ -199,14 +180,13 @@ export default function Page({ navigation }) {
                     scrollEnabled={isScrollEnabled}
                     scrollEventThrottle={16}
                 >
-
+                    {/* <ImageSlider flatlistHeight={flatlistHeight} flatListOpacity={flatListOpacity} currentEstablishment={currentEstablishment!}></ImageSlider> */}
                     <Animated.View style={{ height: flatlistHeight }} >
                         <FlatList
-                            ref={flatListRef}
-                            data={currentEstablishMent?.imgs}
+                            data={currentEstablishment?.imgs}
                             renderItem={({ item, index }) => (
                                 <View style={{ width: SCREEN_WIDTH, height: "100%", justifyContent: 'center', alignItems: 'center' }}>
-                                    <Image source={item} style={{ flex: 1, resizeMode: 'cover', width: "100%", height: "100%" }} />
+                                    <Image source={{uri:item.replace("localhost","192.168.0.100")}} style={{ flex: 1, resizeMode: 'cover', width: "100%", height: "100%" }} />
                                     <Animated.View style={{
                                         opacity: flatListOpacity,
                                         backgroundColor: 'white',
@@ -237,7 +217,7 @@ export default function Page({ navigation }) {
                             bottom: 10,
                             right: 10
                         }}>
-                            <Text style={{ color: "#FFFFFF", flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', fontSize: SIZES.medium, padding: SIZES.xSmall, borderRadius: 10 }}>{currentIndex + 1}/{currentEstablishMent?.imgs.length}</Text>
+                            <Text style={{ color: "#FFFFFF", flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', fontSize: SIZES.medium, padding: SIZES.xSmall, borderRadius: 10 }}>{currentIndex + 1}/{currentEstablishment?.imgs.length}</Text>
                         </Animated.View>
 
                         <View style={{ width: 30, height: 'auto', position: 'absolute', bottom: -40, right: 20, alignItems: 'center', justifyContent: 'center' }}>
@@ -248,8 +228,8 @@ export default function Page({ navigation }) {
                     </Animated.View>
                     <View>
                         <View style={{ padding: SIZES.small }}>
-                            <Text style={{ fontSize: SIZES.large }}>{currentEstablishMent?.title}</Text>
-                            <Text style={{ fontSize: SIZES.medium, fontWeight: '400', color: 'gray' }}>Пр. Алии Молдагуловой 46 "Капитал плаза" (цокольный этаж)</Text>
+                            <Text style={{ fontSize: SIZES.large }}>{currentEstablishment?.title}</Text>
+                            <Text style={{ fontSize: SIZES.medium, fontWeight: '400', color: 'gray' }}>{currentEstablishment?.address}</Text>
                         </View>
                         <View style={{ width: "100%", flexDirection: 'row', justifyContent: "space-between", paddingLeft: SIZES.small, paddingRight: SIZES.small }}>
                             <TouchableOpacity style={{ width: 30, height: 30, borderColor: 'gray', borderRadius: 15, borderWidth: 1, flexDirection: "row", justifyContent: "center", alignItems: "center", padding: 5 }}>
@@ -274,7 +254,7 @@ export default function Page({ navigation }) {
                     </View>
                     <View
                         style={{ height: 'auto', flex: 1 }}>
-                        <DetailedInfo onTabPress={onTabPress} establishment={currentEstablishMent}></DetailedInfo>
+                        <DetailedInfo onTabPress={onTabPress} establishment={currentEstablishment}></DetailedInfo>
 
                     </View>
 

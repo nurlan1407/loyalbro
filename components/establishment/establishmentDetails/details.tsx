@@ -5,7 +5,9 @@ import { useState, useRef } from 'react'
 import Animated, { useSharedValue, withSpring, useAnimatedStyle, interpolate, Extrapolate } from 'react-native-reanimated'
 import { FlatList } from 'react-native'
 import icons from '~/constants/icons'
-
+import { useAppSelector } from '~/hooks/reduxHooks'
+import { RootState } from '~/lib/redux'
+import Contact from '../contact'
 
 const mockSchedule = [
     { day: "Monday", time: "08:32-19:00" },
@@ -24,6 +26,7 @@ interface DetailProps extends ViewProps {
 
 }
 const Details: React.FC<DetailProps> = () => {
+    const currentEstablishment = useAppSelector((state:RootState)=>state.establishments.currentEst)
     const showSchedule = useSharedValue(1)
     const [showRef, setShowRef] = useState(false)
     function onSchedulePressed() {
@@ -48,20 +51,6 @@ const Details: React.FC<DetailProps> = () => {
     });
 
 
-    const showFullSchedule = useAnimatedStyle(() => {
-        return {
-            height: interpolate(showSchedule.value, [0, 1], [0, 250])
-        };
-    });
-
-    // const showNotFullSchedule = useAnimatedStyle(() => {
-    //     return {
-    //         display: interpolate(showSchedule.value, [1, 0], ['none', 'block'])
-    //     };
-    // });
-
-
-
     function onPhonePress(number: string) {
         Linking.openURL(`tel:${number}`)
     }
@@ -70,7 +59,7 @@ const Details: React.FC<DetailProps> = () => {
         <View style={{ padding: SIZES.medium, marginTop: 1, paddingTop: 0 }} onLayout={(e) => {
         }}>
             <Text style={{ fontSize: SIZES.large }}>Описание</Text>
-            <Text style={{ fontSize: SIZES.medium, color: 'gray' }}>Оздоровительный центр</Text>
+            <Text style={{ fontSize: SIZES.medium, color: 'gray' }}>{currentEstablishment?.description}</Text>
             <View style={{ flexDirection: 'row', gap: 25, alignItems: 'center', marginTop: 10 }}>
                 <Ionicons name="time-outline" size={32} color={COLORS.primary} style={{ width: 50, height: 50, paddingTop: 10 }} />
                 {showRef == false ?
@@ -118,9 +107,13 @@ const Details: React.FC<DetailProps> = () => {
                 </View>
             </View>
             <View style={{ flexDirection: 'row', gap: 20 }}>
-                <TouchableOpacity style={{ width: 50, height: 50 }}>
+
+                {currentEstablishment?.contacts.map((contact)=>(
+                    <Contact contact={contact}></Contact>
+                ))}
+                {/* <TouchableOpacity style={{ width: 50, height: 50 }}>
                     <Image source={icons.instagram} style={{ width: 50, height: 50 }} />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
             </View>
         </View>

@@ -1,6 +1,6 @@
 import React, { ReactNode, useState, useEffect, useRef } from 'react'
 import { View, Text, Animated, ScrollView, Dimensions, LayoutChangeEvent, TouchableOpacity } from "react-native"
-import { Establishment } from '~/types/Establishment'
+import { Establishment } from '~/entities/establishment/types'
 import { SIZES } from '~/constants/theme'
 import Details from './details'
 import Testimomials from '../testimonials'
@@ -8,6 +8,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { NavigationContainer } from '@react-navigation/native'
 import Fade from '~/shared/ui/Fade'
 import { FlatList } from 'react-native-gesture-handler'
+import Bonuses from './bonuses'
 // import Animated, { interpolateColor, useAnimatedStyle, useSharedValue, withTiming, SharedValue } from 'react-native-reanimated'
 
 const SCREEN_WIDTH = Dimensions.get('screen').width
@@ -32,7 +33,7 @@ const subPages: SubPage[] = [
     {
         name: 'bonuses',
         title: "Бонусы",
-        Node: <Text>Monuses</Text>
+        Node: <Bonuses></Bonuses>
     },
     {
         name: 'map',
@@ -48,29 +49,21 @@ interface DetailedInfoProps {
 }
 
 const DetailedInfo: React.FC<DetailedInfoProps> = ({ onTabPress }) => {
-    const scrollViewRef = useRef<FlatList>(null);
-    const [currentPageIndex, setCurrentPageIndex] = useState(0);
-    const [heights, setHeights] = useState<number[]>(new Array(subPages.length).fill(0)); // Initialize with 0
-
-    // const changePage = (pageIndex: number) => {
-    //     scrollViewRef.current?.scrollTo({ x: SCREEN_WIDTH * pageIndex, animated: true });
-    //     setCurrentPageIndex(pageIndex);
-    // };
 
     const [currentPage, setCurrentPage] = useState(subPages[0]);
-    const [isVisible, setIsVisible] = useState(true); // Добавляем состояние для управления видимостью
+    const [isVisible, setIsVisible] = useState(true);
 
     const changePage = (newPage: SubPage) => {
         if (newPage !== currentPage) {
-            setIsVisible(false); // Сначала скрываем текущую страницу
+            setIsVisible(false); 
             setTimeout(() => {
-                setCurrentPage(newPage); // Затем обновляем текущую страницу
-                setIsVisible(true); // И делаем новую страницу видимой
-            }, 300); // Задержка должна соответствовать длительности анимации исчезновения
+                setCurrentPage(newPage);
+                setIsVisible(true); 
+            }, 300);
         }
     };
 
-    // ... остальной код
+  
 
     return (
         <>
@@ -81,7 +74,6 @@ const DetailedInfo: React.FC<DetailedInfoProps> = ({ onTabPress }) => {
             }}>
                 {subPages.map((page, index) => (
                     <TouchableOpacity
-                        // style={{padding:SIZES.xSmall}}
                         onPress={() => { onTabPress(); changePage(page) }}
 
                     >
@@ -92,7 +84,6 @@ const DetailedInfo: React.FC<DetailedInfoProps> = ({ onTabPress }) => {
                             {page.title}
                         </Text>
                     </TouchableOpacity>
-
                 ))}
             </View>
             <Fade isVisible={isVisible}>
